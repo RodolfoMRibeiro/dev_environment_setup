@@ -66,6 +66,10 @@ function Update-Path {
     [Environment]::SetEnvironmentVariable("Path", $newPath, $ENV_MACHINE)
 }
 
+function Set-WSL2 {
+    wsl --set-default-version 2
+}
+
 function EXECUTE {
     Show-Intro
     Install-Chocolatey
@@ -82,8 +86,12 @@ function EXECUTE {
         "warp --version=22.8.857.0",
         "vscode",
         "postman",
-        "openjdk11"
-        "androidstudio"
+        "openjdk11",
+        "androidstudio",
+        "docker-desktop",
+        "docker-compose",
+        "wsl2",
+        "wsl-ubuntu-2204" 
     )
         
     Install-Packages -packages $packages
@@ -96,6 +104,7 @@ function EXECUTE {
     Set-EnvironmentVariables -javaPath $javaPath -androidPath $ANDROID_HOME
     
     Update-Path -androidPath $ANDROID_SDK_PATH
+    Set-WSL2
 }
 
 EXECUTE
