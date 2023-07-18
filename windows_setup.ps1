@@ -1,4 +1,3 @@
-# Constants
 $CHOCO_URL = 'https://chocolatey.org/install.ps1'
 $ANDROID_SDK_PATH = "C:\Android\Sdk"
 $ANDROID_HOME = "ANDROID_HOME"
@@ -34,7 +33,7 @@ function Install-Packages {
     )
 
     foreach ($package in $packages) {
-        choco install $package -y
+        choco install $package --ignore-checksums -y
     }
 }
 
@@ -51,7 +50,7 @@ function Set-EnvironmentVariables {
         [string]$javaPath,
         [string]$androidPath
     )
-        
+
     [Environment]::SetEnvironmentVariable($ANDROID_HOME, $androidPath, $ENV_MACHINE)
     [Environment]::SetEnvironmentVariable($JAVA_HOME, $javaPath, $ENV_MACHINE)
 }
@@ -64,10 +63,6 @@ function Update-Path {
     $path = [Environment]::GetEnvironmentVariable("Path", $ENV_MACHINE)
     $newPath = $path + ";%$androidPath%\emulator;%$androidPath%\tools;%$androidPath%\tools\bin;%$androidPath%\platform-tools"
     [Environment]::SetEnvironmentVariable("Path", $newPath, $ENV_MACHINE)
-}
-
-function Set-WSL2 {
-    wsl --set-default-version 2
 }
 
 function EXECUTE {
@@ -84,16 +79,16 @@ function EXECUTE {
         "yarn",
         "7zip",
         "warp --version=22.8.857.0",
+        "visualstudio2019community",
         "vscode",
         "postman",
+        "git.install",
         "openjdk11",
         "androidstudio",
         "docker-desktop",
-        "docker-compose",
-        "wsl2",
-        "wsl-ubuntu-2204" 
+        "docker-compose"
     )
-        
+
     Install-Packages -packages $packages
     New-Directories -dirPath $ANDROID_SDK_PATH
         
@@ -101,10 +96,9 @@ function EXECUTE {
     Update-SessionEnvironment
     
     $javaPath = ((Get-Command java).Source -split '\\bin')[0]
-    Set-EnvironmentVariables -javaPath $javaPath -androidPath $ANDROID_HOME
+    Set-EnvironmentVariables -javaPath $javaPath -androidPath $ANDROID_SDK_PATH
     
     Update-Path -androidPath $ANDROID_SDK_PATH
-    Set-WSL2
 }
 
 EXECUTE
