@@ -1,7 +1,5 @@
 #!/bin/bash
 
-ANDROID_SDK_PATH="/usr/local/Caskroom/android-sdk"
-ANDROID_HOME="ANDROID_HOME"
 JAVA_HOME="JAVA_HOME"
 
 function show_intro() {
@@ -23,55 +21,44 @@ function show_intro() {
 }
 
 function update_system() {
-    apt update
-    apt upgrade -y
+    sudo apt update
+    sudo apt upgrade -y
 }
 
-function install_homebrew() {
-    apt install curl -y
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    source ~/.bashrc
+function install_snap() {
+    sudo apt install snapd -y
 }
 
 function install_required_packages() {
     local required_packages=(
-        "notepadqq"
-        "node"
-        "python@3"
-        "go"
-        "dbeaver-community"
-        "p7zip"
-        "spotify"
+        "notepad-plus-plus"
+        "node --classic"
+        "python38"
+        "go --classic"
+        "dbeaver-ce"
+        "winrar"
         "yarn"
-        "visual-studio-code"
+        "--classic code"
         "postman"
         "git"
-        "openjdk@11"
-        "--cask docker"
-        "docker-compose"
-        "--cask android-studio"
+        "openjdk-11-jdk"
+        "docker"
     )
 
     for package in "${required_packages[@]}"; do
-        brew install "$package" -y
+        sudo snap install "$package" --classic
     done
 }
 
 function update_installed_packages() {
-    brew upgrade -y
+    sudo snap refresh
 }
 
 function setup_environment_variables() {
     local java_path
     java_path=$(command -v java | sed 's/\/bin\/java//')
 
-    [ -d "$ANDROID_SDK_PATH" ] || sudo mkdir -p "$ANDROID_SDK_PATH"
-
-    echo "export $ANDROID_HOME=$ANDROID_SDK_PATH" >> ~/.bash_profile
-    echo "export $JAVA_HOME=$java_path" >> ~/.bash_profile
-
-    local new_path="$ANDROID_SDK_PATH/emulator:$ANDROID_SDK_PATH/tools:$ANDROID_SDK_PATH/tools/bin:$ANDROID_SDK_PATH/platform-tools"
-    echo "export PATH=\$PATH:$new_path" >> ~/.bash_profile
+    echo "export $JAVA_HOME=$java_path" >> ~/.bashrc
 }
 
 function main() {
@@ -79,7 +66,7 @@ function main() {
 
     update_system
 
-    install_homebrew
+    install_snap
 
     install_required_packages
 
